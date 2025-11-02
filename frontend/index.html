@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Todo App</title>
+</head>
+<body>
+  <h1>Todo List</h1>
+  <ul id="todoList"></ul>
+
+  <input type="text" id="todoInput" placeholder="새 Todo 입력">
+  <button onclick="addTodo()">추가</button>
+
+  <script>
+    const API_URL = "http://localhost:3000/todos";
+
+    // 모든 Todo 가져오기
+    async function getTodos() {
+      const res = await fetch(API_URL);
+      const todos = await res.json();
+      const list = document.getElementById("todoList");
+      list.innerHTML = "";
+      todos.forEach(todo => {
+        const li = document.createElement("li");
+        li.textContent = `${todo.title} - ${todo.completed ? "완료" : "미완료"}`;
+        list.appendChild(li);
+      });
+    }
+
+    // Todo 추가
+    async function addTodo() {
+      const input = document.getElementById("todoInput");
+      const title = input.value.trim();
+      if (!title) return alert("내용을 입력하세요.");
+
+      await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title })
+      });
+
+      input.value = "";
+      getTodos();
+    }
+
+    // 페이지 로드 시 초기 데이터 가져오기
+    getTodos();
+  </script>
+</body>
+</html>
